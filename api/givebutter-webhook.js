@@ -30,11 +30,6 @@ export default async function handler(req, res) {
     // Parse and log the webhook data
     const webhookData = req.body;
 
-    console.log("=== GIVEBUTTER WEBHOOK RECEIVED ===");
-    console.log("Timestamp:", new Date().toISOString());
-    console.log("Full payload:", JSON.stringify(webhookData, null, 2));
-    console.log("===================================");
-
     // Get campaign details from GB webhook
     const campaignData = webhookData.data;
     const campaignDetails = webhookData.data.event;
