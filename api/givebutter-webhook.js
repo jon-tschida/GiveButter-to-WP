@@ -35,6 +35,49 @@ export default async function handler(req, res) {
     console.log("Full payload:", JSON.stringify(webhookData, null, 2));
     console.log("===================================");
 
+    // Get campaign details from GB webhook
+    const campaignData = webhookData.data;
+    const campaignDetails = webhookData.data.event;
+
+    const eventDetails = {
+      title: campaignDetails.title,
+      description: campaignData.description,
+      start_date: campaignDetails.start_at,
+      end_date: campaignDetails.end_at,
+      status: "publish",
+      show_map: true,
+      show_map_link: true,
+      website: campaignData.url,
+      timezone: campaignDetails.timezone,
+    };
+
+    try {
+      // Check if campaign type is 'event' and status is 'published'
+      if (campaignData.type !== "event") {
+        return "Campaign type is not event";
+      }
+
+      if (campaignData.status !== "active") {
+        return "Campaign status is not published";
+      }
+      const response = await fetch(
+        "https://thefatherson.org/wp-json/tribe/events/v1/events",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "basic " + process.env.WP_REST_AUTH,
+          },
+          body: JSON.stringify(eventDetails),
+        },
+      );
+
+      const responseData = await response.json();
+      console.log(responseData);
+    } catch (error) {
+      console.log(error);
+    }
+
     // Return success to Givebutter
     return res.status(200).json({
       success: true,
