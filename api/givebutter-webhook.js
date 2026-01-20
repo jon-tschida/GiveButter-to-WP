@@ -54,11 +54,21 @@ export default async function handler(req, res) {
     try {
       // Check if campaign type is 'event' and status is 'published'
       if (campaignData.type !== "event") {
-        return "Campaign type is not event";
+        console.log("Event not published on website, type is not an event");
+        return res.status(200).json({
+          success: true,
+          message: "Webhook received but skipped (campaign not an event)",
+        });
       }
 
       if (campaignData.status !== "active") {
-        return "Campaign status is not published";
+        console.log(
+          "Event not published on website, campaign is not published",
+        );
+        return res.status(200).json({
+          success: true,
+          message: "webhook received but skipped (campaign is not published)",
+        });
       }
       const response = await fetch(
         "https://thefatherson.org/wp-json/tribe/events/v1/events",
